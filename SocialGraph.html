@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialGraph - Friend Network</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Facebook-style Header -->
+    <header class="fb-header">
+        <div class="fb-header-left">
+            <div class="fb-logo">SG</div>
+            <div class="fb-search">
+                <input type="text" placeholder="Search SocialGraph..." id="searchInput">
+            </div>
+        </div>
+        <div class="fb-header-center">
+            <div class="fb-nav-item active" title="Home">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </div>
+            <div class="fb-nav-item" title="Friends" onclick="showPanel('friends')">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            </div>
+            <div class="fb-nav-item" title="Recommendations" onclick="showPanel('recommendations')">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M9 11.75c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zm6 0c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.07 8.33 14.05 10 17.42 10c.78 0 1.53-.09 2.25-.26.21.71.33 1.47.33 2.26 0 4.41-3.59 8-8 8z"/></svg>
+            </div>
+        </div>
+        <div class="fb-header-right">
+            <div class="fb-dropdown" id="currentUserDropdown">
+                <div class="fb-user-trigger" onclick="toggleDropdown('currentUserDropdown')">
+                    <div class="fb-avatar-small" id="currentUserAvatar">A</div>
+                    <span id="currentUserName">Account</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </div>
+                <div class="fb-dropdown-menu">
+                    <div class="fb-dropdown-header">Switch Account</div>
+                    <div id="accountList"></div>
+                </div>
+            </div>
+            <div class="fb-icon-btn" title="Notifications">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+            </div>
+        </div>
+    </header>
+
+    <div class="fb-container">
+        <!-- Left Sidebar -->
+        <aside class="fb-sidebar">
+            <div class="fb-menu-item" onclick="showPanel('home')">
+                <div class="fb-menu-icon">🏠</div>
+                <span>Home</span>
+            </div>
+            <div class="fb-menu-item" onclick="selectUserById(currentUserId)">
+                <div class="fb-menu-icon">👤</div>
+                <span>My Profile</span>
+            </div>
+            <div class="fb-menu-item" onclick="showPanel('friends')">
+                <div class="fb-menu-icon">👥</div>
+                <span>Friends</span>
+            </div>
+            <div class="fb-menu-item" onclick="showPanel('recommendations')">
+                <div class="fb-menu-icon">💡</div>
+                <span>Friend Requests</span>
+            </div>
+            <div class="fb-menu-item" onclick="showPanel('graph')">
+                <div class="fb-menu-icon">🕸️</div>
+                <span>Graph View</span>
+            </div>
+            <div class="fb-menu-divider"></div>
+            <div class="fb-menu-section-title">Your Shortcuts</div>
+            <div id="shortcutsList"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="fb-main">
+            <!-- Stories Section -->
+            <div class="fb-stories" id="storiesSection">
+                <div class="fb-story create-story">
+                    <div class="fb-story-avatar">
+                        <div class="fb-avatar-small" id="storyAvatar">A</div>
+                    </div>
+                    <span>Create Story</span>
+                </div>
+                <div id="storyCards"></div>
+            </div>
+
+            <!-- What's on your mind -->
+            <div class="fb-create-post">
+                <div class="fb-create-top">
+                    <div class="fb-avatar-small" id="posterAvatar">A</div>
+                    <input type="text" placeholder="What's on your mind?" id="postInput">
+                </div>
+                <div class="fb-create-actions">
+                    <button class="fb-action-btn">
+                        <span>📷</span> Photo/Video
+                    </button>
+                    <button class="fb-action-btn">
+                        <span>📍</span> Check in
+                    </button>
+                </div>
+            </div>
+
+            <!-- Post Feed -->
+            <div id="postFeed"></div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="fb-right-sidebar">
+            <div class="fb-sponsored">Sponsored</div>
+            <div class="fb-ad-item">
+                <div class="fb-ad-image">🎮</div>
+                <div class="fb-ad-text">
+                    <div class="fb-ad-title">DSA Learning Game</div>
+                    <div class="fb-ad-desc">Master algorithms visually</div>
+                </div>
+            </div>
+            
+            <div class="fb-menu-divider"></div>
+            
+            <div class="fb-contacts-header">
+                <span>Contacts</span>
+                <div class="fb-contact-actions">
+                    <span>🔍</span>
+                    <span>⚙️</span>
+                </div>
+            </div>
+            <div id="contactsList"></div>
+
+            <div class="fb-graph-mini" id="graphMini">
+                <div class="fb-graph-header">Network Graph</div>
+                <canvas id="miniGraphCanvas"></canvas>
+                <div class="fb-stats-row">
+                    <div><span id="miniUsers">8</span> users</div>
+                    <div><span id="miniEdges">12</span> connections</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modals -->
+    <div class="fb-modal" id="addFriendModal">
+        <div class="fb-modal-content">
+            <div class="fb-modal-header">
+                <h3>Add Friend</h3>
+                <button class="fb-close" onclick="closeModal('addFriendModal')">×</button>
+            </div>
+            <div class="fb-modal-body">
+                <div class="fb-search-results" id="addFriendSearch"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fb-modal" id="friendsModal">
+        <div class="fb-modal-content fb-modal-large">
+            <div class="fb-modal-header">
+                <h3>Friends</h3>
+                <button class="fb-close" onclick="closeModal('friendsModal')">×</button>
+            </div>
+            <div class="fb-modal-tabs">
+                <button class="fb-tab active" data-tab="all">All Friends</button>
+                <button class="fb-tab" data-tab="mutual">Mutual</button>
+            </div>
+            <div class="fb-modal-body" id="friendsModalList"></div>
+        </div>
+    </div>
+
+    <div class="fb-modal" id="recommendationsModal">
+        <div class="fb-modal-content fb-modal-large">
+            <div class="fb-modal-header">
+                <h3>Friend Suggestions</h3>
+                <button class="fb-close" onclick="closeModal('recommendationsModal')">×</button>
+            </div>
+            <div class="fb-modal-body" id="recommendationsModalList"></div>
+        </div>
+    </div>
+
+    <div class="fb-modal" id="graphModal">
+        <div class="fb-modal-content fb-modal-xlarge">
+            <div class="fb-modal-header">
+                <h3>Network Graph Visualization</h3>
+                <button class="fb-close" onclick="closeModal('graphModal')">×</button>
+            </div>
+            <div class="fb-graph-stats">
+                <div class="fb-stat-item">
+                    <div class="fb-stat-value" id="graphUsersCount">0</div>
+                    <div class="fb-stat-label">Users</div>
+                </div>
+                <div class="fb-stat-item">
+                    <div class="fb-stat-value" id="graphEdgesCount">0</div>
+                    <div class="fb-stat-label">Connections</div>
+                </div>
+                <div class="fb-stat-item">
+                    <div class="fb-stat-value" id="graphDensity">0%</div>
+                    <div class="fb-stat-label">Density</div>
+                </div>
+            </div>
+            <div class="fb-modal-body fb-graph-body">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+            <div class="fb-graph-legend">
+                <div class="fb-legend-item"><span class="fb-legend-dot current"></span> Current User</div>
+                <div class="fb-legend-item"><span class="fb-legend-dot friend"></span> Friends</div>
+                <div class="fb-legend-item"><span class="fb-legend-dot other"></span> Other Users</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fb-modal" id="profileModal">
+        <div class="fb-modal-content fb-modal-large">
+            <div class="fb-modal-header">
+                <h3 id="profileName">My Profile</h3>
+                <button class="fb-close" onclick="closeModal('profileModal')">×</button>
+            </div>
+            <div class="fb-profile-header" id="profileHeader">
+                <div class="fb-profile-cover" id="profileCover"></div>
+                <div class="fb-profile-avatar-section">
+                    <div class="fb-profile-avatar" id="profileAvatar"></div>
+                    <div class="fb-profile-name" id="profileNameText"></div>
+                </div>
+            </div>
+            <div class="fb-profile-stats" id="profileStats">
+                <div class="fb-profile-stat">
+                    <div class="fb-profile-stat-value" id="profileFriendsCount">0</div>
+                    <div class="fb-profile-stat-label">Friends</div>
+                </div>
+                <div class="fb-profile-stat">
+                    <div class="fb-profile-stat-value" id="profileMutualCount">0</div>
+                    <div class="fb-profile-stat-label">Mutual Friends</div>
+                </div>
+            </div>
+            <div class="fb-modal-body">
+                <div class="fb-profile-section">
+                    <h4>Friends</h4>
+                    <div class="fb-profile-friends" id="profileFriendsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
